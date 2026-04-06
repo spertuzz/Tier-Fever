@@ -393,7 +393,8 @@ def select_timer(code, wait_time):
                 'category': settings[code]['active_cat'],
                 'master': settings[code]['current_master'],
                 'timer_start': start_time,
-                'timer_end': end_time
+                'timer_end': end_time,
+                'server_time': time.time()
             }, to=code)
 
 
@@ -472,6 +473,7 @@ def join_handler():
                                 'categories': cats,
                                 'timer_start': start_time,
                                 'timer_end': end_time,
+                                'server_time': time.time(),
                                 'max_elements': settings[code]['configs']['max_elements'],
                                 'round': settings[code]['round'],
                                 'total_rounds': settings[code]['configs']['rounds'] * len(rooms[code])
@@ -510,6 +512,7 @@ def join_handler():
                                 'master': None,
                                 'timer_start': start_time,
                                 'timer_end': end_time,
+                                'server_time': time.time(),
                                 'round': settings[code]['round'],
                                 'total_rounds': settings[code]['configs']['rounds'] * len(rooms[code])
                             }, to=code)
@@ -520,6 +523,7 @@ def join_handler():
                         'categories': settings[code]['current_cats'],
                         'timer_start': settings[code]['timer_start'],
                         'timer_end': settings[code]['timer_end'],
+                        'server_time': time.time(),
                         'max_elements': settings[code]['configs']['max_elements'],
                         'round': settings[code]['round'],
                         'total_rounds': settings[code]['configs']['rounds'] * len(rooms[code])
@@ -532,6 +536,7 @@ def join_handler():
                             'master': settings[code]['current_master'],
                             'timer_start': settings[code]['timer_start'],
                             'timer_end': settings[code]['timer_end'],
+                            'server_time': time.time(),
                             'round': settings[code]['round'],
                             'total_rounds': settings[code]['configs']['rounds'] * len(rooms[code])
                         }, to=request.sid)
@@ -539,7 +544,8 @@ def join_handler():
                     # In case of disconnection in the waiting room
                     emit('waiting_room', {
                             'timer_start': settings[code]['timer_start'],
-                            'timer_end': settings[code]['timer_end']
+                            'timer_end': settings[code]['timer_end'],
+                            'server_time': time.time()
                         }, to=request.sid)
             elif settings[code]['state'] == 'scoring':                
                 # Get game host and breakdowns
@@ -648,6 +654,7 @@ def choice_handler(data):
                         'master': settings[code]['current_master'],
                         'timer_start': start_time,
                         'timer_end': end_time,
+                        'server_time': time.time(),
                         'round': settings[code]['round'],
                         'total_rounds': settings[code]['configs']['rounds'] * len(rooms[code])
                     }, to=code)
@@ -879,7 +886,8 @@ def tier_complete_handler(data):
                 if len(settings[code]['locked_players']) < len(rooms[code]):
                     emit('waiting_room', {
                             'timer_start': settings[code]['timer_start'],
-                            'timer_end': settings[code]['timer_end']
+                            'timer_end': settings[code]['timer_end'],
+                            'server_time': time.time()
                         }, to=request.sid)
                 else:
                     # Map scores
