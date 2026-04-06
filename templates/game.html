@@ -24,7 +24,7 @@
 		})
 		
 		// Master 'selection' phase
-		socket.on('select', function(data) {
+		socket.off('select').on('select', function(data) {
 			// Cancel previous timers
 			if (timer) {
 				clearInterval(timer);
@@ -261,7 +261,7 @@
 		})
 		
 		// Tiering
-		socket.on('tier', function(data) {
+		socket.off('tier').on('tier', function(data) {
 			// Cancel previous timers
 			if (timer) {
 				clearInterval(timer);
@@ -486,7 +486,7 @@
 		})
 		
 		// Scoring
-		socket.on('score', function(data) {
+		socket.off('score').on('score', function(data) {
 			// Cancel previous timers
 			if (timer) {
 				clearInterval(timer);
@@ -731,7 +731,7 @@
 		})
 		
 		// Restart the round when done
-		socket.on('restart', function() {
+		socket.off('restart').on('restart', function() {
 			window.location.href = '/game'
 		})
 		
