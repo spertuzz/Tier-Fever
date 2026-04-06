@@ -1,0 +1,5 @@
+Flask==3.0.3
+Flask-Session==0.8.0
+Flask-SocketIO==5.3.6
+better_profanity==0.7.0
+alt-profanity-check==1.4.1.1
