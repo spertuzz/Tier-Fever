@@ -6,6 +6,6 @@ WORKDIR /tier-fever
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all files and run app
+# Copy all files and run app with gunicorn for better performance
 COPY . .
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--worker-class", "eventlet", "-w", "1", "--bind", "0.0.0.0:5000", "app:socketio"]
