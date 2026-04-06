@@ -1,6 +1,6 @@
 # Slim python version to save space and enter app dir
 FROM python:3.9-slim
-WORKDIR /tier_fever
+WORKDIR /tier-fever
 
 # Install requirements
 COPY requirements.txt .
