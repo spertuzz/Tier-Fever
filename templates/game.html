@@ -53,11 +53,12 @@
 				const start_time = data['timer_start']
 				const end_time = data['timer_end']
 				const diff = end_time - start_time
+				const offset = data['server_time'] - Date.now() / 1000
 				
 				// Start timer loop (low wait time for smoothness)
 				timer = setInterval(function() {
 					// Calculate time difference and progress bar progress
-					let current_time = Date.now() / 1000
+					let current_time = Date.now() / 1000 + offset
 					let frac = (current_time - start_time) / diff
 					let done = false
 					// Logic in case timer ends prematurely
@@ -209,11 +210,12 @@
 				const start_time = data['timer_start']
 				const end_time = data['timer_end']
 				const diff = end_time - start_time
+				const offset = data['server_time'] - Date.now() / 1000
 				
 				// Start timer loop (low wait time for smoothness)
 				timer = setInterval(function() {
 					// Calculate time difference and progress bar progress
-					let current_time = Date.now() / 1000
+					let current_time = Date.now() / 1000 + offset
 					let frac = (current_time - start_time) / diff
 					let done = false
 					// Logic in case timer ends prematurely
@@ -284,11 +286,12 @@
 			const start_time = data['timer_start']
 			const end_time = data['timer_end']
 			const diff = end_time - start_time
+			const offset = data['server_time'] - Date.now() / 1000
 			
 			// Start timer loop (low wait time for smoothness)
 			timer = setInterval(function() {
 				// Calculate time difference and progress bar progress
-				let current_time = Date.now() / 1000
+				let current_time = Date.now() / 1000 + offset
 				let frac = (current_time - start_time) / diff
 				let done = false
 				// Logic in case timer ends prematurely
@@ -445,11 +448,12 @@
 			const start_time = data['timer_start']
 			const end_time = data['timer_end']
 			const diff = end_time - start_time
+			const offset = data['server_time'] - Date.now() / 1000
 			
 			// Start timer loop (low wait time for smoothness)
 			timer = setInterval(function() {
 				// Calculate time difference and progress bar progress
-				let current_time = Date.now() / 1000
+				let current_time = Date.now() / 1000 + offset
 				let frac = (current_time - start_time) / diff
 				let done = false
 				// Logic in case timer ends prematurely
