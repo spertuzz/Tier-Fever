@@ -425,7 +425,7 @@
 		})
 		
 		// Sends users that are done to the waiting room
-		socket.on('waiting_room', function(data) {
+		socket.off('waiting_room').on('waiting_room', function(data) {
 			// Cancel previous timers
 			if (timer) {
 				clearInterval(timer);
