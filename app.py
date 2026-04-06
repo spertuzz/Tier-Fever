@@ -22,7 +22,7 @@ socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*")
 
 rooms = {}
 settings = {}
-categories = {}
+categories_list = {}
 
 cat_files = os.listdir('categories')
 
@@ -35,9 +35,9 @@ for f in cat_files:
             if len(line) < 1: continue
             if title is None:
                 title = line
-                categories[title] = []
+                categories_list[title] = []
             else:
-                categories[title].append(line)
+                categories_list[title].append(line)
 
 
 # Determine if a string has profanity
@@ -375,7 +375,7 @@ def select_timer(code, wait_time):
         
         # Select a random category
         category_name = random.choice(settings[code]['current_cats'])
-        category_elements = random.sample(categories[category_name], settings[code]['configs']['max_elements'])
+        category_elements = random.sample(categories_list[category_name], settings[code]['configs']['max_elements'])
         settings[code]['past_cats'].append(category_name)
         
         # Format in settings
@@ -448,13 +448,13 @@ def join_handler():
                         cats = []
                         for i in range(3):
                             candidates = []
-                            for category in categories:
+                            for category in categories_list:
                                 if (category not in settings[code]['past_cats']) and (category not in cats):
                                     candidates.append(category)
                             if len(candidates) < 1:
                                 # Reset 'past_cats' list if all categories have been seen
                                 settings[code]['past_cats'] = []
-                                candidates = list(categories.keys())
+                                candidates = list(categories_list.keys())
                             winner = random.choice(candidates)
                             cats.append(winner)
                         settings[code]['current_cats'] = cats
@@ -479,17 +479,17 @@ def join_handler():
                     else:
                         # Select a valid category
                         candidates = []
-                        for cat in categories:
+                        for cat in categories_list:
                             if cat not in settings[code]['past_cats']:
                                 candidates.append(cat)
                         if len(candidates) < 1:
                             # Reset 'past_cats' list if all categories have been seen
                             settings[code]['past_cats'] = []
-                            candidates = list(categories.keys())
+                            candidates = list(categories_list.keys())
                         category_name = random.choice(candidates)
                         
                         # Gather category info for selection
-                        category_elements = random.sample(categories[category_name], settings[code]['configs']['max_elements'])
+                        category_elements = random.sample(categories_list[category_name], settings[code]['configs']['max_elements'])
                         
                         # Set new category variables
                         settings[code]['active_cat'] = { 'name': category_name, 'elements': category_elements }
@@ -609,7 +609,7 @@ def choice_handler(data):
                 if data['type'] == 'normal':
                     # Gather category info based on normal selection
                     category_name = data['category']
-                    category_elements = random.sample(categories[category_name], settings[code]['configs']['max_elements'])
+                    category_elements = random.sample(categories_list[category_name], settings[code]['configs']['max_elements'])
                     settings[code]['past_cats'].append(category_name)
                 else:
                     # Gather category info for custom selection
