@@ -1,0 +1,19 @@
+services:
+  my-app:
+    build: .
+    container_name: flask-server
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./flask_session:/tier_fever/flask_session
+      - ./categories:/tier_fever/categories
+      - ./static:/tier_fever/static
+      - ./templates:/tier_fever/templates
+      - ./docs:/tier_fever/docs
+    networks:
+      - pertuz-net
+
+networks:
+  pertuz-net:
+    external: true
