@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 import random
 import os
 import time
@@ -15,7 +18,7 @@ app.config['SECRET_KEY'] = 'big_evil_secret_muahahaha'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*")
 
 rooms = {}
 settings = {}
@@ -952,4 +955,4 @@ def restart_handler():
 
 # Run the app
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0')
