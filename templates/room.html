@@ -92,7 +92,7 @@
 		})
 		
 		// Send player to the game page
-		socket.on('start_game', function() {
+		socket.off('start_game').on('start_game', function() {
 			window.location.href = '/game'
 		})
 		
