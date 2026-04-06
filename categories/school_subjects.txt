@@ -1,0 +1,23 @@
+School Subjects
+
+Math
+Physics
+Chemistry
+Biology
+English
+Spanish
+History
+Economics
+P.E.
+Religion
+Lunch
+Dismissal
+Guidance
+French
+Social Studies
+Art
+Music
+Tech
+Psychology
+Philosophy
+Health
