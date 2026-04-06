@@ -1,16 +1,16 @@
 services:
-  my-app:
+  tier-fever:
     build: .
-    container_name: flask-server
+    container_name: tier-fever
     restart: always
     ports:
       - "5000:5000"
     volumes:
-      - ./flask_session:/tier_fever/flask_session
-      - ./categories:/tier_fever/categories
-      - ./static:/tier_fever/static
-      - ./templates:/tier_fever/templates
-      - ./docs:/tier_fever/docs
+      - ./flask_session:/tier-fever/flask_session
+      - ./categories:/tier-fever/categories
+      - ./static:/tier-fever/static
+      - ./templates:/tier-fever/templates
+      - ./docs:/tier-fever/docs
     networks:
       - pertuz-net
 
