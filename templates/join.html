@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Join
+{% endblock %}
+
+{% block main %}
+	
+	<!-- Name card -->
+	<form action="/room" method="post" autocomplete="off">
+		<div class="card centered" style="width: 18rem;">
+			<div class="card-body">
+				<!-- Main form -->
+				<div class="mb-3">
+					<label for="name" class="form-label" style="font-weight: 600;">Choose a name!</label>
+					<input type="text" class="form-control" name="name" id="name" maxlength="25" placeholder="Enter your name:">
+				</div>
+				<button type="submit" class="btn btn-success">Join the action!</button>
+			</div>
+		</div>
+	</form>
+	
+	<!-- Redirect message -->
+	{% if message %}
+        <div class="centered redirect-text">{{ message }}</div>
+	{% else %}
+        {{ super() }}
+    {% endif %}
+	
+{% endblock %}
