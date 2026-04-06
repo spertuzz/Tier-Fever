@@ -952,4 +952,4 @@ def restart_handler():
 
 # Run the app
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0', allow_unsafe_werkzeug=True)
