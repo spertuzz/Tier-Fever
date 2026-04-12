@@ -563,7 +563,8 @@
 				let rev_time = 6000 + 10000 * i - latency_ms
 				setTimeout(function() {
 					// Update headings
-					sub.textContent = elem + ' was placed in'
+					const sub_head = elem + ' was placed in'
+					sub.textContent = sub_head.charAt(0).toUpperCase() + sub_head.slice(1)
 					head.textContent = master_pick['letter'] + '-tier!'
 					
 					// Create tier list element
