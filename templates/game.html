@@ -530,7 +530,7 @@
 			score_msg.textContent = '[' + name + ']    Your score: ' + score_acc.toString()
 			
 			// Setup loops
-			const latency_ms = data['latency'] * 1000
+			const latency_ms = (data['latency'] + data['server_time'] - data['timer_start']) * 1000
 			for (let i = 0; i < Object.keys(master_picks).length; i++) {
 				// Get relevant pick data
 				const elem = Object.keys(master_picks)[i]
