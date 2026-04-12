@@ -342,16 +342,21 @@ def clean_up(code):
 
 # Ping the user and wait for a return
 def ping(code, name, packet):
+    # Check if valid
     if code not in rooms: return
     if name and name not in rooms[code]: return
     if request and hasattr(request, 'sid'):
+        # Set specific id if it exists
         this_sid = request.sid
     else:
+        # Set id to the entire room code if not
         this_sid = code
     if name:
+        # Set up ping and send empty request to client
         rooms[code][name]['last_ping'] = { 'time': time.time(), 'packet': packet }
         socketio.emit('ping', {}, to=this_sid)
     else:
+        # Set up ping for all clients and send them empty requests
         for name in rooms[code]:
             rooms[code][name]['last_ping'] = { 'time': time.time(), 'packet': packet }
         socketio.emit('ping', {}, to=code)
@@ -366,11 +371,17 @@ def pong_handler():
     # Check if data is valid
     if (name and code) and (code in rooms):
         if name in rooms[code]:
+            # Calculate latency
             last_time = rooms[code][name]['last_ping']['time']
             packet = rooms[code][name]['last_ping']['packet']
             latency = (time.time() - last_time) / 2
-            packet['data']['latency'] = latency
-            emit(packet['route'], packet['data'], to=request.sid)
+
+            # Create new client packet
+            client_data = packet['data'].copy()
+            client_data['latency'] = latency
+
+            # Emit data with latency
+            emit(packet['route'], client_data, to=request.sid)
 
 
 @socketio.on('disconnect')
@@ -620,7 +631,9 @@ def join_handler():
                 game_over = settings[code]['round'] >= settings[code]['configs']['rounds'] * len(rooms[code])
                 
                 # In case of disconnection during scoring
-                emit('score', {
+                packet = {
+                    'route': 'score',
+                    'data': {
                         'host': host,
                         'starting_scores': settings[code]['starting_scores'],
                         'picks': breakdowns,
@@ -628,7 +641,9 @@ def join_handler():
                         'master_picks': settings[code]['master_picks'],
                         'leaderboard': settings[code]['ending_scores'],
                         'game_over': game_over
-                    }, to=code)
+                    }
+                }
+                ping(code, name, packet)
 
 
 @socketio.on('kick')
