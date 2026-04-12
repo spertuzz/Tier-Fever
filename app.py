@@ -640,7 +640,9 @@ def join_handler():
                         'master': settings[code]['current_master'],
                         'master_picks': settings[code]['master_picks'],
                         'leaderboard': settings[code]['ending_scores'],
-                        'game_over': game_over
+                        'game_over': game_over,
+                        'timer_start': settings[code]['timer_start'],
+                        'server_time': time.time()
                     }
                 }
                 ping(code, name, packet)
@@ -892,6 +894,7 @@ def tier_timer(code, wait_time):
                 
             # Set the new game state
             settings[code]['state'] = 'scoring'
+            settings[code]['timer_start'] = time.time()
             
             # Determine if the game is over
             game_over = settings[code]['round'] >= settings[code]['configs']['rounds'] * len(rooms[code])
@@ -906,7 +909,9 @@ def tier_timer(code, wait_time):
                     'master': settings[code]['current_master'],
                     'master_picks': settings[code]['master_picks'],
                     'leaderboard': settings[code]['ending_scores'],
-                    'game_over': game_over
+                    'game_over': game_over,
+                    'timer_start': settings[code]['timer_start'],
+                    'server_time': settings[code]['timer_start']
                 }
             }
             ping(code, None, packet)
@@ -996,6 +1001,7 @@ def tier_complete_handler(data):
                         
                     # Set the new game state
                     settings[code]['state'] = 'scoring'
+                    settings[code]['timer_start'] = time.time()
                     
                     # Determine if the game is over
                     game_over = settings[code]['round'] >= settings[code]['configs']['rounds'] * len(rooms[code])
@@ -1010,7 +1016,9 @@ def tier_complete_handler(data):
                             'master': settings[code]['current_master'],
                             'master_picks': settings[code]['master_picks'],
                             'leaderboard': settings[code]['ending_scores'],
-                            'game_over': game_over
+                            'game_over': game_over,
+                            'timer_start': settings[code]['timer_start'],
+                            'server_time': settings[code]['timer_start']
                         }
                     }
                     ping(code, None, packet)
