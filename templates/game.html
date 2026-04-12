@@ -22,6 +22,11 @@
 		socket.on('connect', function() {
 			socket.emit('join')
 		})
+
+		// Latency check
+		socket.on('ping', function() {
+			socket.emit('pong')
+		})
 		
 		// Master 'selection' phase
 		socket.off('select').on('select', function(data) {
@@ -55,10 +60,10 @@
 				const diff = end_time - start_time
 				const offset = data['server_time'] - Date.now() / 1000
 				
-				// Start timer loop (low wait time for smoothness)
+				// Start timer loop (low-ish wait time for smoothness)
 				timer = setInterval(function() {
 					// Calculate time difference and progress bar progress
-					let current_time = Date.now() / 1000 + offset
+					let current_time = Date.now() / 1000 + offset + data['latency']
 					let frac = (current_time - start_time) / diff
 					let done = false
 					// Logic in case timer ends prematurely
@@ -87,7 +92,7 @@
 					
 					// Stop animation if the timer ends
 					if (done) clearInterval(timer)
-				}, 10)
+				}, 100)
 			}
 			else {
 				// Fetch useful elements and change text to match current master
@@ -215,7 +220,7 @@
 				// Start timer loop (low wait time for smoothness)
 				timer = setInterval(function() {
 					// Calculate time difference and progress bar progress
-					let current_time = Date.now() / 1000 + offset
+					let current_time = Date.now() / 1000 + offset + data['latency']
 					let frac = (current_time - start_time) / diff
 					let done = false
 					// Logic in case timer ends prematurely
@@ -244,7 +249,7 @@
 					
 					// Stop animation if the timer ends
 					if (done) clearInterval(timer)
-				}, 10)
+				}, 100)
 			}
 		})
 		
@@ -291,7 +296,7 @@
 			// Start timer loop (low wait time for smoothness)
 			timer = setInterval(function() {
 				// Calculate time difference and progress bar progress
-				let current_time = Date.now() / 1000 + offset
+				let current_time = Date.now() / 1000 + offset + data['latency']
 				let frac = (current_time - start_time) / diff
 				let done = false
 				// Logic in case timer ends prematurely
@@ -320,7 +325,7 @@
 				
 				// Stop animation if the timer ends
 				if (done) clearInterval(timer)
-			}, 10)
+			}, 100)
 			
 			// Update text
 			const cat_text = document.getElementById('category_text')
@@ -453,7 +458,7 @@
 			// Start timer loop (low wait time for smoothness)
 			timer = setInterval(function() {
 				// Calculate time difference and progress bar progress
-				let current_time = Date.now() / 1000 + offset
+				let current_time = Date.now() / 1000 + offset + data['latency']
 				let frac = (current_time - start_time) / diff
 				let done = false
 				// Logic in case timer ends prematurely
@@ -482,7 +487,7 @@
 				
 				// Stop animation if the timer ends
 				if (done) clearInterval(timer)
-			}, 10)
+			}, 100)
 		})
 		
 		// Scoring
@@ -525,6 +530,7 @@
 			score_msg.textContent = '[' + name + ']    Your score: ' + score_acc.toString()
 			
 			// Setup loops
+			const latency_ms = data['latency'] * 1000
 			for (let i = 0; i < Object.keys(master_picks).length; i++) {
 				// Get relevant pick data
 				const elem = Object.keys(master_picks)[i]
@@ -532,7 +538,7 @@
 				const master_pick = master_picks[elem]
 				
 				// Anticipation
-				let ant_time = 2000 + 10000 * i
+				let ant_time = 2000 + 10000 * i - latency_ms
 				setTimeout(function() {
 					// Update subheading
 					sub.textContent = 'You put ' + elem + ' in ' + pick['letter'] + '-tier.'
@@ -554,7 +560,7 @@
 				}, ant_time)
 				
 				// Reveal
-				let rev_time = 6000 + 10000 * i
+				let rev_time = 6000 + 10000 * i - latency_ms
 				setTimeout(function() {
 					// Update headings
 					sub.textContent = elem + ' was placed in'
@@ -645,7 +651,7 @@
 			}
 			
 			// Ending logic
-			let end_time = Object.keys(master_picks).length * 10000 + 2000
+			let end_time = Object.keys(master_picks).length * 10000 + 2000 - latency_ms
 			setTimeout(function() {
 				// Change headings
 				sub.textContent = 'This round is over.'
