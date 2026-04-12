@@ -40,4 +40,3 @@ Space Invaders
 Doom
 Street Fighters
 Halo
-this game
