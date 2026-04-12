@@ -1,7 +1,7 @@
 Superheroes
 
 Superman
-Spiderman
+Spider-Man
 Wonder Woman
 The Hulk
 Captain America
@@ -40,3 +40,5 @@ Moon Knight
 Blue Beetle
 Omni-Man
 Invincible
+Ben 10
+Max Steel
