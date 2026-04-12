@@ -29,7 +29,12 @@
 		})
 		
 		// Master 'selection' phase
+		var has_selected = false
 		socket.off('select').on('select', function(data) {
+			// Cancel if already done
+			if (has_selected) return
+			has_selected = true
+			
 			// Cancel previous timers
 			if (timer) {
 				clearInterval(timer);
@@ -266,7 +271,12 @@
 		})
 		
 		// Tiering
+		var has_tiered = false
 		socket.off('tier').on('tier', function(data) {
+			// Check if already done
+			if (has_tiered) return
+			has_tiered = true
+			
 			// Cancel previous timers
 			if (timer) {
 				clearInterval(timer);
@@ -430,7 +440,12 @@
 		})
 		
 		// Sends users that are done to the waiting room
+		var has_waited = false
 		socket.off('waiting_room').on('waiting_room', function(data) {
+			// Check if done
+			if (has_waited) return
+			has_waited = true
+			
 			// Cancel previous timers
 			if (timer) {
 				clearInterval(timer);
@@ -491,7 +506,12 @@
 		})
 		
 		// Scoring
+		var has_scored = false
 		socket.off('score').on('score', function(data) {
+			// Check if done
+			if (has_scored) return
+			has_scored = true
+			
 			// Cancel previous timers
 			if (timer) {
 				clearInterval(timer);
