@@ -180,7 +180,8 @@ def room():
             'master': False,
             'picks': None,
             'pick_breakdown': None,
-            'connected': True
+            'connected': True,
+            'last_ping': None,
         }
     
     # Double-check validity (to fix refreshes)
@@ -278,7 +279,8 @@ def host():
             'master': False,
             'picks': None,
             'pick_breakdown': None,
-            'connected': True
+            'connected': True,
+            'last_ping': None
         }
         return redirect('/room')
     
@@ -338,6 +340,39 @@ def clean_up(code):
     del settings[code]
 
 
+# Ping the user and wait for a return
+def ping(code, name, packet):
+    if code not in rooms: return
+    if name and name not in rooms[code]: return
+    if request and hasattr(request, 'sid'):
+        this_sid = request.sid
+    else:
+        this_sid = code
+    if name:
+        rooms[code][name]['last_ping'] = { 'time': time.time(), 'packet': packet }
+        socketio.emit('ping', {}, to=this_sid)
+    else:
+        for name in rooms[code]:
+            rooms[code][name]['last_ping'] = { 'time': time.time(), 'packet': packet }
+        socketio.emit('ping', {}, to=code)
+
+
+@socketio.on('pong')
+def pong_handler():
+    # Get user data
+    name = session.get('name')
+    code = session.get('room')
+    
+    # Check if data is valid
+    if (name and code) and (code in rooms):
+        if name in rooms[code]:
+            last_time = rooms[code][name]['last_ping']['time']
+            packet = rooms[code][name]['last_ping']['packet']
+            latency = (time.time() - last_time) / 2
+            packet['data']['latency'] = latency
+            emit(packet['route'], packet['data'], to=request.sid)
+
+
 @socketio.on('disconnect')
 def disconnect_handler():
     # Get user data
@@ -389,13 +424,17 @@ def select_timer(code, wait_time):
         settings[code]['timer_end'] = end_time
         
         # Start next phase
-        socketio.emit('tier', {
+        packet = {
+            'route': 'tier',
+            'data': {
                 'category': settings[code]['active_cat'],
                 'master': settings[code]['current_master'],
                 'timer_start': start_time,
                 'timer_end': end_time,
                 'server_time': time.time()
-            }, to=code)
+            }
+        }
+        ping(code, None, packet)
 
 
 @socketio.on('join')
@@ -410,6 +449,7 @@ def join_handler():
             # Join room
             join_room(code)
             rooms[code][name]['connected'] = True  
+            rooms[code][name]['last_ping'] = None
             
             # Update players in the room
             emit('update_players', { 'players': rooms[code], 'kill': False }, to=code)
@@ -468,7 +508,9 @@ def join_handler():
                         socketio.start_background_task(select_timer, code, settings[code]['configs']['master_choice_time'] + 1)
                         
                         # Start selection process
-                        emit('select', {
+                        packet = {
+                            'route': 'select',
+                            'data': {
                                 'master': master,
                                 'categories': cats,
                                 'timer_start': start_time,
@@ -477,7 +519,9 @@ def join_handler():
                                 'max_elements': settings[code]['configs']['max_elements'],
                                 'round': settings[code]['round'],
                                 'total_rounds': settings[code]['configs']['rounds'] * len(rooms[code])
-                            }, to=code)
+                            }
+                        }
+                        ping(code, None, packet)
                     else:
                         # Select a valid category
                         candidates = []
@@ -507,7 +551,9 @@ def join_handler():
                         socketio.start_background_task(tier_timer, code, settings[code]['configs']['player_tier_time'] + 1)
                         
                         # Start next game phase
-                        emit('tier', {
+                        packet = {
+                            'route': 'tier',
+                            'data': {
                                 'category': settings[code]['active_cat'],
                                 'master': None,
                                 'timer_start': start_time,
@@ -515,10 +561,14 @@ def join_handler():
                                 'server_time': time.time(),
                                 'round': settings[code]['round'],
                                 'total_rounds': settings[code]['configs']['rounds'] * len(rooms[code])
-                            }, to=code)
+                            }
+                        }
+                        ping(code, None, packet)
             elif settings[code]['state'] == 'selection':
                 # In case of disconnection during selection
-                emit('select', {
+                packet = {
+                    'route': 'select',
+                    'data': {
                         'master': settings[code]['current_master'],
                         'categories': settings[code]['current_cats'],
                         'timer_start': settings[code]['timer_start'],
@@ -527,11 +577,15 @@ def join_handler():
                         'max_elements': settings[code]['configs']['max_elements'],
                         'round': settings[code]['round'],
                         'total_rounds': settings[code]['configs']['rounds'] * len(rooms[code])
-                    }, to=request.sid)
+                    }
+                }
+                ping(code, name, packet)
             elif settings[code]['state'] == 'tiering':
                 if name not in settings[code]['locked_players']:
                     # In case of disconnection during tiering
-                    emit('tier', {
+                    packet = {
+                        'route': 'tier',
+                        'data': {
                             'category': settings[code]['active_cat'],
                             'master': settings[code]['current_master'],
                             'timer_start': settings[code]['timer_start'],
@@ -539,14 +593,20 @@ def join_handler():
                             'server_time': time.time(),
                             'round': settings[code]['round'],
                             'total_rounds': settings[code]['configs']['rounds'] * len(rooms[code])
-                        }, to=request.sid)
+                        }
+                    }
+                    ping(code, name, packet)
                 else:
                     # In case of disconnection in the waiting room
-                    emit('waiting_room', {
+                    packet = {
+                        'route': 'waiting_room',
+                        'data': {
                             'timer_start': settings[code]['timer_start'],
                             'timer_end': settings[code]['timer_end'],
                             'server_time': time.time()
-                        }, to=request.sid)
+                        }
+                    }
+                    ping(code, name, packet)
             elif settings[code]['state'] == 'scoring':                
                 # Get game host and breakdowns
                 host = None
@@ -649,7 +709,9 @@ def choice_handler(data):
                 socketio.start_background_task(tier_timer, code, settings[code]['configs']['player_tier_time'] + 1)
                 
                 # Start next game phase
-                emit('tier', {
+                packet = {
+                    'route': 'tier',
+                    'data': {
                         'category': settings[code]['active_cat'],
                         'master': settings[code]['current_master'],
                         'timer_start': start_time,
@@ -657,7 +719,9 @@ def choice_handler(data):
                         'server_time': time.time(),
                         'round': settings[code]['round'],
                         'total_rounds': settings[code]['configs']['rounds'] * len(rooms[code])
-                    }, to=code)
+                    }
+                }
+                ping(code, None, packet)
 
 
 # Calculate scores for all players
@@ -818,7 +882,9 @@ def tier_timer(code, wait_time):
             game_over = settings[code]['round'] >= settings[code]['configs']['rounds'] * len(rooms[code])
             
             # Progress the game
-            socketio.emit('score', {
+            packet = {
+                'route': 'score',
+                'data': {
                     'host': host,
                     'starting_scores': starting_scores,
                     'picks': breakdowns,
@@ -826,7 +892,9 @@ def tier_timer(code, wait_time):
                     'master_picks': settings[code]['master_picks'],
                     'leaderboard': settings[code]['ending_scores'],
                     'game_over': game_over
-                }, to=code)
+                }
+            }
+            ping(code, None, packet)
             
             # Clean up if game is over
             if game_over:
@@ -884,11 +952,15 @@ def tier_complete_handler(data):
                 
                 # Check if players are still remaining
                 if len(settings[code]['locked_players']) < len(rooms[code]):
-                    emit('waiting_room', {
+                    packet = {
+                        'route': 'waiting_room',
+                        'data': {
                             'timer_start': settings[code]['timer_start'],
                             'timer_end': settings[code]['timer_end'],
                             'server_time': time.time()
-                        }, to=request.sid)
+                        }
+                    }
+                    ping(code, name, packet)
                 else:
                     # Map scores
                     starting_scores = {}
@@ -914,7 +986,9 @@ def tier_complete_handler(data):
                     game_over = settings[code]['round'] >= settings[code]['configs']['rounds'] * len(rooms[code])
                     
                     # Progress the game
-                    emit('score', {
+                    packet = {
+                        'route': 'score',
+                        'data': {
                             'host': host,
                             'starting_scores': starting_scores,
                             'picks': breakdowns,
@@ -922,7 +996,9 @@ def tier_complete_handler(data):
                             'master_picks': settings[code]['master_picks'],
                             'leaderboard': settings[code]['ending_scores'],
                             'game_over': game_over
-                        }, to=code)
+                        }
+                    }
+                    ping(code, None, packet)
                         
                     # Clean up if game is over
                     if game_over:
