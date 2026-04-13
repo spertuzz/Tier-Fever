@@ -374,7 +374,7 @@ def pong_handler():
             # Calculate latency
             last_time = rooms[code][name]['last_ping']['time']
             packet = rooms[code][name]['last_ping']['packet']
-            latency = (time.time() - last_time) / 2
+            latency = (time.time() - last_time) * 1.5
 
             # Create new client packet
             client_data = packet['data'].copy()
