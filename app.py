@@ -516,7 +516,7 @@ def join_handler():
                         end_time = start_time + settings[code]['configs']['master_choice_time']
                         settings[code]['timer_start'] = start_time
                         settings[code]['timer_end'] = end_time
-                        socketio.start_background_task(select_timer, code, settings[code]['configs']['master_choice_time'] + 1)
+                        socketio.start_background_task(select_timer, code, settings[code]['configs']['master_choice_time'] + 2)
                         
                         # Start selection process
                         packet = {
@@ -554,12 +554,12 @@ def join_handler():
                         
                         # Set new timer
                         start_time = time.time()
-                        end_time = start_time +  settings[code]['configs']['player_tier_time']
+                        end_time = start_time + settings[code]['configs']['player_tier_time']
                         settings[code]['timer_start'] = start_time
                         settings[code]['timer_end'] = end_time
                         
                         # Start timer
-                        socketio.start_background_task(tier_timer, code, settings[code]['configs']['player_tier_time'] + 1)
+                        socketio.start_background_task(tier_timer, code, settings[code]['configs']['player_tier_time'] + 2)
                         
                         # Start next game phase
                         packet = {
@@ -723,7 +723,7 @@ def choice_handler(data):
                 settings[code]['timer_end'] = end_time
                 
                 # Start timer
-                socketio.start_background_task(tier_timer, code, settings[code]['configs']['player_tier_time'] + 1)
+                socketio.start_background_task(tier_timer, code, settings[code]['configs']['player_tier_time'] + 2)
                 
                 # Start next game phase
                 packet = {
