@@ -558,7 +558,7 @@
 				const master_pick = master_picks[elem]
 				
 				// Anticipation
-				let ant_time = 2000 + 10000 * i - latency_ms
+				let ant_time = 3000 + 10000 * i - latency_ms
 				setTimeout(function() {
 					// Update subheading
 					sub.textContent = 'You put ' + elem + ' in ' + pick['letter'] + '-tier.'
@@ -580,7 +580,7 @@
 				}, ant_time)
 				
 				// Reveal
-				let rev_time = 6000 + 10000 * i - latency_ms
+				let rev_time = 7000 + 10000 * i - latency_ms
 				setTimeout(function() {
 					// Update headings
 					const sub_head = elem + ' was placed in'
@@ -672,7 +672,7 @@
 			}
 			
 			// Ending logic
-			let end_time = Object.keys(master_picks).length * 10000 + 2000 - latency_ms
+			let end_time = Object.keys(master_picks).length * 10000 + 3000 - latency_ms
 			setTimeout(function() {
 				// Change headings
 				sub.textContent = 'This round is over.'
