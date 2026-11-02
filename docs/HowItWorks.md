@@ -89,4 +89,99 @@ Here, you can already see some relevant information being sent: `category`, so t
 
 In my game, I have to prevent things from dragging out. I can't just leave players editing their lists forever or allow the master to take ages to choose a category, as that would really suck.
 
-Right when packets are being sent to all players so they can reconstruct the scene, a background timer is started using `socketio.start_background_task`
+As soon as packets are sent to all players so they can reconstruct the scene, a background timer starts using `socketio.start_background_task` and waits until it runs out. If it runs out before all players finish, then the packet sends everyone to the next game phase. Here's an example of one of these timers:
+
+```python
+# Timer incase the master takes too long to decide
+def select_timer(code, wait_time):  # For the selection phase
+    # Wait the given time
+    socketio.sleep(wait_time)
+    # Check if the game still has not progressed
+    if settings[code]['state'] == 'selection':
+        # Set the new game state
+        settings[code]['state'] = 'tiering'
+        
+        # Select a random category
+        category_name = random.choice(settings[code]['current_cats'])
+        category_elements = random.sample(categories[category_name], settings[code]['configs']['max_elements'])
+        settings[code]['past_cats'].append(category_name)
+        
+        # Format in settings
+        settings[code]['active_cat'] = { 'name': category_name, 'elements': category_elements }
+        settings[code]['state'] = 'tiering'
+        
+        # Decide new timer
+        start_time = time.time()
+        end_time = start_time +  settings[code]['configs']['player_tier_time']
+        settings[code]['timer_start'] = start_time
+        settings[code]['timer_end'] = end_time
+        
+        # Start next phase
+        packet = {
+            'route': 'tier',
+            'data': {
+                'category': settings[code]['active_cat'],
+                'master': settings[code]['current_master'],
+                'timer_start': start_time,
+                'timer_end': end_time,
+                'server_time': time.time()
+            }
+        }
+        ping(code, None, packet)
+```
+
+This simply sends clients right to the next phase (the tiering phase, in this case) to prevent the game from stalling.
+
+Now, I know what you may be thinking. Why, then, am I providing those timer variables in the packet?
+
+It's simple, really. They're used so the client can build the progress bars (timers) on their own screen, running calculations based on those variables. It's nifty because, if they refresh the tab, the game could provide them with a new value for `server_time` to build the timer in sync with the game. Here's an example:
+
+```javascript
+// Gather progress bar elements and relevant numbers
+const progress_bar = document.getElementById('waiting_bar')
+const start_time = data['timer_start']
+const end_time = data['timer_end']
+const diff = end_time - start_time
+
+// Start timer loop (low wait time for smoothness)
+timer = setInterval(function() {
+  // Calculate time difference and progress bar progress
+  let current_time = Date.now() / 1000 + data['latency']
+  let frac = (current_time - start_time) / diff
+  let done = false
+  // Logic in case timer ends prematurely
+  if (frac > 1) {
+    done = true
+    frac = 1
+  }
+  progress_bar.style.width = (frac * 100).toString() + '%'
+  
+  // Handle color changes
+  if (frac < 0.5) {
+    progress_bar.style.color = '#198754'
+    progress_bar.style.backgroundColor = '#198754'
+    progress_bar.style.borderColor = '#198754'
+  }
+  else if (frac < 0.8) {
+    progress_bar.style.color = '#ffc107'
+    progress_bar.style.backgroundColor = '#ffc107'
+    progress_bar.style.borderColor = '#ffc107'
+  }
+  else {
+    progress_bar.style.color = '#dc3545'
+    progress_bar.style.backgroundColor = '#dc3545'
+    progress_bar.style.borderColor = '#dc3545'
+  }
+  
+  // Stop animation if the timer ends
+  if (done) clearInterval(timer)
+}, 100)
+```
+
+This leads to a functioning game.
+
+## Wait, refreshing? That can kill a lot of games.
+
+Not mine (hopefully)! The key benefit of storing all room data in my weird little dictionary system is that, if a player ever disconnects and reconnects later, my server can pick up on that (if I have a `join` block in my client to send a `SocketIO` request) and send the client a packet to reconstruct the game at the same phase as everyone else. Plus, since my timer system allows for the current server time to be sent, the client can actually build the timer to be synced with other players. Pretty cool!
+
+## What is `data['latency']`? I didn't see that in the packet!
