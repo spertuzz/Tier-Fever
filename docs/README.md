@@ -39,4 +39,8 @@ After this phase is complete, the game repeats with a brand-new round with a dif
 
 ## I want to play!
 
-Awesome! The game is currently being hosted on my Raspberry Pi 5 at <a href="https://pertuz-pi.tail43b234.ts.net:8443/">this link</a>.
+Awesome! The game is currently being hosted on my Raspberry Pi 5 at <a href="https://pertuz-pi.tail43b234.ts.net:8443/">this link</a>. Enjoy!
+
+## I'm a nerd, and I want to know how it works!
+
+Okay, then. You can check out an overview on my <a href="HowItWorks.md">HowItWorks.md</a> file.
