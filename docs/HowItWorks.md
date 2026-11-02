@@ -20,7 +20,8 @@ Those are the *essentials*. What I used for the website to work. Like, it can ru
 - **Docker** to actually run the process on the RPi (for real this time) in a container.
 - **Tailscale** to open my site to the public through a funnel (I do not have a static IP).
 
-Something important to note is that my Gunicorn instance is running with only one `eventlet` worker because all my stuff is in local Python dictionaries on the server RAM...
+Something important to note is that my Gunicorn instance is running with only one `eventlet` worker because all my stuff is in local Python dictionaries in the server RAM...
+I also used `better_profanity` and `profanity_check` to create a mixed profanity filter that can be optionally enabled or disabled.
 
 ## Great! How do I make a room, though?
 
