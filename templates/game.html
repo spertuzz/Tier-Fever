@@ -278,8 +278,6 @@
 			// Check if already done
 			if (has_tiered) return
 			has_tiered = true
-
-			console.log(data)
 			
 			// Cancel previous timers
 			if (timer) {
@@ -319,7 +317,6 @@
 					done = true
 					frac = 1
 				}
-				console.log(frac)
 				progress_bar.style.width = String(frac * 100) + '%'
 				
 				// Handle color changes
