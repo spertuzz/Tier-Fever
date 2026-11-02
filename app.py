@@ -340,6 +340,30 @@ def clean_up(code):
     del settings[code]
 
 
+# Routine cleaner
+def roomba(code):
+    last_chance = False  # Whether the last check yielded empty
+    while code in rooms:
+        # Wait for next check
+        socketio.sleep(30)
+
+        # Check if anyone in the room is still connected
+        if code not in rooms: break
+        for name in rooms[code]:
+            if rooms[code][name]['connected']:
+                last_chance = False
+                continue
+
+        # If no one is connected, check if the last check also yielded empty
+        if last_chance:
+            # If it did, clean up the room
+            clean_up(code)
+            break
+        else:
+            # Give one more chance if it was full before
+            last_chance = True
+
+
 # Ping the user and wait for a return
 def ping(code, name, packet):
     # Check if valid
@@ -403,7 +427,7 @@ def disconnect_handler():
                 rooms[code][name]['connected'] = False
                         
             # Update other players
-            emit('update_players', { 'players': rooms[code], 'kill': kill }, to=code)
+            if settings[code]['state'] == 'open': emit('update_players', { 'players': rooms[code], 'kill': kill }, to=code)
             
             # Kill room if empty
             if len(rooms[code]) < 1:
@@ -554,7 +578,7 @@ def join_handler():
             rooms[code][name]['last_ping'] = None
             
             # Update players in the room
-            emit('update_players', { 'players': rooms[code], 'kill': False }, to=code)
+            if settings[code]['state'] == 'open': emit('update_players', { 'players': rooms[code], 'kill': False }, to=code)
             
             # Check if players loaded in (in the 'starting' state)
             if settings[code]['state'] == 'starting':
@@ -765,6 +789,9 @@ def start_handler():
             if rooms[code][name]['host'] and settings[code]['state'] == 'open':
                 # Close room
                 settings[code]['state'] = 'starting'
+
+                # Start the checks
+                socketio.start_background_task(roomba, code)
                 
                 # Send players to main game
                 emit('start_game', {}, to=code)
