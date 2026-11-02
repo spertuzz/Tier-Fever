@@ -536,7 +536,7 @@ def tier_timer(code, wait_time):
             settings[code]['state'] = 'starting'
             
             # Move on
-            emit('restart', {}, to=code)
+            socketio.emit('restart', {}, to=code)
 
 
 @socketio.on('join')
