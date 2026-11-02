@@ -2,6 +2,10 @@
 
 Welcome! Have you ever wanted to play a game about tier lists? Well, you probably haven't. That's an oddly specific thing to want. But if you somehow did, then this is the game for you!
 
+<div align="center">
+    <img src="../assets/showcase0.png" alt="Game image" width="600">
+</div>
+
 ## The Game Itself
 
 Tier Fever is a multiplayer web game designed specifically to run in a Docker container, and even more specifically for my Raspberry Pi 5. It was designed to mimic the simple, easy-to-play style of games in the Jackbox Party Packs and the room-based systems in games like Gartic Phone. Anyone can create a room with the settings they desire, and others can join that room by inputting its code. Once enough people have joined, the host can start the game. Then, it proceeds as follows.
