@@ -442,7 +442,9 @@ def select_timer(code, wait_time):
                 'master': settings[code]['current_master'],
                 'timer_start': start_time,
                 'timer_end': end_time,
-                'server_time': time.time()
+                'server_time': time.time(),
+                'round': settings[code]['round'],
+                'total_rounds': settings[code]['configs']['rounds'] * len(rooms[code])
             }
         }
         ping(code, None, packet)
