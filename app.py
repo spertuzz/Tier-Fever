@@ -433,6 +433,9 @@ def select_timer(code, wait_time):
         end_time = start_time +  settings[code]['configs']['player_tier_time']
         settings[code]['timer_start'] = start_time
         settings[code]['timer_end'] = end_time
+
+        # Start timer
+        socketio.start_background_task(tier_timer, code, settings[code]['configs']['player_tier_time'] + 2)
         
         # Start next phase
         packet = {
