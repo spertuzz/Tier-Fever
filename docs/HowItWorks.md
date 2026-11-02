@@ -68,3 +68,25 @@ When players input the code to join the room, this adds them to the SocketIO roo
 
 ## Cool, but how does that become a game?
 
+It's actually quite simple. After a round starts, all phases work in very similar ways. Essentially, I wanted to avoid using too many SocketIO pings between the player and the server, since these can be a little finicky and unreliable. To prevent these hurdles from ruining the experience, I decided to only do *one* main server-to-client ping per round. To maximize the potential of this ping (and to make sure the client receives enough information to handle the rest of the round), the packets sent across them are a bit dense. Here's one of them:
+
+```python
+# Example of a dense packet used for the tiering phase
+{
+    'category': settings[code]['active_cat'],
+    'master': settings[code]['current_master'],
+    'timer_start': start_time,
+    'timer_end': end_time,
+    'server_time': time.time(),
+    'round': settings[code]['round'],
+    'total_rounds': settings[code]['configs']['rounds'] * len(rooms[code])
+}
+```
+
+Here, you can already see some relevant information being sent: `category`, so the client knows the category being ranked and its element; `master`, so the client knows who the master is; and `round`/`total_rounds`, which are numbers rendered on the screen. So, just from this information, it's enough to reconstruct most of the scene. Like, in the tiering state, knowing all the elements to be ranked and who the current master is (alongside those round numbers) is already enough to place those elements on the screen and have the player move them around. The one question left is: what are those *timer* things?
+
+### The Timer System
+
+In my game, I have to prevent things from dragging out. I can't just leave players editing their lists forever or allow the master to take ages to choose a category, as that would really suck.
+
+Right when packets are being sent to all players so they can reconstruct the scene, a background timer is started using `socketio.start_background_task`
