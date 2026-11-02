@@ -216,6 +216,6 @@ Technically, no. Of course, there's many other small design decisions made in th
 
 ---
 
-This project was honestly such a fun experience. I learned a ton about full-stack development, and also some fancy terms. Well, maybe. I was convinced for a while that my little ping-pong system was called an "NTP", and I recently learned, like, a week ago that this isn't true. Besides small stumbles like that, this was a blast!
+This project was honestly such a fun experience. I learned a ton about full-stack development, and also some fancy terms like "SocketIO". Well, maybe. I was convinced for a while that my little ping-pong system was called an "NTP", and I recently learned, like, a week ago that this isn't true. Besides small stumbles like that, this was a blast!
 
 Thank you so much for taking the time to read this, and I hope you have an amazing day!
