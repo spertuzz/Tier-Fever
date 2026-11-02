@@ -14,6 +14,10 @@ Tier Fever is a multiplayer web game designed specifically to run in a Docker co
 
 At the start of the game, a player will be chosen to be the **master**. In the selection phase, the master must select one of 3 categories of objects for players to rank, as the next part of the game will involve placing things on a tier list (other players wait in the meantime). If the master is dissatisfied with the options shown or has something unique in mind, they can write out their own list of elements. After they make their choice, the game moves on to the next phase.
 
+<div align="center">
+    <img src="../assets/showcase1.png" alt="Game image" width="600">
+</div>
+
 ### Tiering Phase
 
 Here, players are working towards one goal: **maximizing score**. They are all given a blank tier list and an equal list of elements belonging to the category chosen by the master.
@@ -34,6 +38,10 @@ Finally, the results for the round are revealed. One by one, the master's placem
 - Being any further from the correct answer does not yield any points.
 
 The master also gains 250 points for every player who correctly guessed each placement, but *only* if they were perfectly accurate. Near-misses do not give the master points.
+
+<div align="center">
+    <img src="../assets/showcase2.png" alt="Game image" width="600">
+</div>
 
 Furthermore, the game also features certain mechanics revolving around how much people agreed on an element or not. If everyone agreed on the placement of an element, everyone gains double score for it (including the master). If people *really* didn't agree on its placement (the standard deviation between rankings was high), then every correct or near-perfect placement yields double score as well.
 
