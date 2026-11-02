@@ -16,8 +16,8 @@ Here, players are working towards one goal: **maximizing score**. They are all g
 
 The way you earn score depends on who you're playing as:
 
-- If you're a player, your goal is to match the master. Without being able to see their rankings, you must try to predict their placements as accurately as possible. In other words, try making the tier list they would make. Here, it helps to be playing with friends that you know fairly well.
-- If you're the master, you want other players to succeed at predicting your list, as you'll be rewarded for that. In other words, don't try to sabotage the players. Your score depends on how well they guess your choices.
+- **If you're a player,** your goal is to match the master. Without being able to see their rankings, you must try to predict their placements as accurately as possible. In other words, try making the tier list they would make. Here, it helps to be playing with friends that you know fairly well.
+- **If you're the master,** you want other players to succeed at predicting your list, as you'll be rewarded for that. In other words, don't try to sabotage the players. Your score depends on how well they guess your choices.
 
 After everyone submits their lists (or the time runs out), the round moves on to its final phase.
 
@@ -31,16 +31,16 @@ Finally, the results for the round are revealed. One by one, the master's placem
 
 The master also gains 250 points for every player who correctly guessed each placement, but *only* if they were perfectly accurate. Near-misses do not give the master points.
 
-Furthermore, the game also features certain mechanics revolving around the "controversiability" of an element in the ranking. In more normal terms, this means how much people agreed on an element or not. If everyone agreed on the placement of an element, everyone gains double score for it (including the master). If people didn't agree on its placement (the standard deviation between rankings was high), then every correct or near-perfect placement yields double score as well.
+Furthermore, the game also features certain mechanics revolving around how much people agreed on an element or not. If everyone agreed on the placement of an element, everyone gains double score for it (including the master). If people *really* didn't agree on its placement (the standard deviation between rankings was high), then every correct or near-perfect placement yields double score as well.
 
 ### Repetition and End
 
-After this phase is complete, the game repeats with a brand-new round with a different master. This process continues until everyone has had a turn as the master, and the whole thing repeats until the chosen number of cycles (a set of $n$ rounds where $n$ is the number of players) are complete. After this happens, all scores are counted up and the game ends.
+After this phase is complete, the game repeats with a brand-new round with a different master. This process continues until everyone has had a turn as the master, and the whole thing repeats until the chosen number of cycles (a set of $n$ rounds where $n$ is the number of players) are complete. After this happens, all scores are counted up, and the game ends.
 
 ## I want to play!
 
-Awesome! The game is currently being hosted on my Raspberry Pi 5 at <a href="https://pertuz-pi.tail43b234.ts.net:8443/">this link</a>. Enjoy!
+Awesome! The game is currently hosted on my Raspberry Pi 5 at <a href="https://pertuz-pi.tail43b234.ts.net:8443/">this link</a>. Enjoy!
 
-## I'm a nerd, and I want to know how it works!
+## How does it work?
 
-Okay, then. You can check out an overview on my <a href="HowItWorks.md">HowItWorks.md</a> file.
+Okay, nerd. You can check out an overview on my <a href="HowItWorks.md">HowItWorks.md</a> file.
