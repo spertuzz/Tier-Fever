@@ -71,7 +71,7 @@ When players input the code to join the room, this adds them to the SocketIO roo
 
 ## Cool, but how does that become a game?
 
-It's actually quite simple. After a round starts, all phases work in very similar ways. Essentially, I wanted to avoid using too many SocketIO pings between the player and the server, since these can be a little finicky and unreliable. To prevent these hurdles from ruining the experience, I decided to only do *one* main server-to-client ping per round. To maximize the potential of this ping (and to make sure the client receives enough information to handle the rest of the round), the packets sent across them are a bit dense. Here's one of them:
+It's actually quite simple. After a round starts, all phases work in very similar ways. Essentially, I wanted to avoid using too many SocketIO pings between the player and the server, since these can be a little finicky and unreliable. Plus, I didn't want to overload my RPi. To prevent these hurdles from ruining the experience, I decided to only do *one* main server-to-client ping per round. To maximize the potential of this ping (and to make sure the client receives enough information to handle the rest of the round), the packets sent across them are a bit dense. Here's one of them:
 
 ```python
 # Example of a dense packet used for the tiering phase
