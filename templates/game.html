@@ -763,6 +763,7 @@
 		
 		// Restart the round when done
 		socket.off('restart').on('restart', function() {
+			console.log('received')
 			window.location.href = '/game'
 		})
 		
