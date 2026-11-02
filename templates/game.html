@@ -70,6 +70,7 @@
 					// Calculate time difference and progress bar progress
 					let current_time = Date.now() / 1000 + offset + data['latency']
 					let frac = (current_time - start_time) / diff
+					if (frac < 0) frac = 0
 					let done = false
 					// Logic in case timer ends prematurely
 					if (frac > 1) {
@@ -227,6 +228,7 @@
 					// Calculate time difference and progress bar progress
 					let current_time = Date.now() / 1000 + offset + data['latency']
 					let frac = (current_time - start_time) / diff
+					if (frac < 0) frac = 0
 					let done = false
 					// Logic in case timer ends prematurely
 					if (frac > 1) {
@@ -308,6 +310,7 @@
 				// Calculate time difference and progress bar progress
 				let current_time = Date.now() / 1000 + offset + data['latency']
 				let frac = (current_time - start_time) / diff
+				if (frac < 0) frac = 0
 				let done = false
 				// Logic in case timer ends prematurely
 				if (frac > 1) {
@@ -475,6 +478,7 @@
 				// Calculate time difference and progress bar progress
 				let current_time = Date.now() / 1000 + offset + data['latency']
 				let frac = (current_time - start_time) / diff
+				if (frac < 0) frac = 0
 				let done = false
 				// Logic in case timer ends prematurely
 				if (frac > 1) {
