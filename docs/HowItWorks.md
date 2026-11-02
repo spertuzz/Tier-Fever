@@ -20,6 +20,8 @@ Those are the *essentials*. What I used for the website to work. Like, it can ru
 - **Docker** to actually run the process on the RPi (for real this time) in a container.
 - **Tailscale** to open my site to the public through a funnel (I do not have a static IP).
 
+Something important to note is that my Gunicorn instance is running with only one `eventlet` worker because all my stuff is in local Python dictionaries on the server RAM...
+
 ## Great! How do I make a room, though?
 
 Good question! For this project, I treated a room as a list of its properties. What even is a room? In this game, it's just the players, the game phase (or `state` in my code), the room settings, and maybe some other things sprinkled in here and there. I split my rooms in two: one server-side dictionary, titled `rooms`, handles the players, while one titled `settings` handles all other properties about the room. This is what they look like:
