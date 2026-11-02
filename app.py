@@ -484,7 +484,7 @@ def tier_timer(code, wait_time):
     # Check if the game still has not progressed
     if settings[code]['state'] == 'tiering':
         # Check if game state is valid
-        if len(settings[code]['locked_players']) > 0:
+        if len(settings[code]['locked_players']) >= 2:
             # Set the new game state
             settings[code]['state'] = 'scoring'
             
@@ -862,8 +862,8 @@ def choice_handler(data):
 # Calculate scores for all players
 def calculate_scores(code):
     # Reference sheet of letters
-    letters = { 'S': 0, 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'F': 5 }
-    inv_letters = ['S', 'A', 'B', 'C', 'D', 'F']
+    letters = { 'S': 0, 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'F': 5, 'fake tier': 6, 'AFK': 7}
+    inv_letters = ['S', 'A', 'B', 'C', 'D', 'F', 'fake tier', 'AFK']
     
     # Standard Deviations
     stdevs = {}
@@ -892,7 +892,7 @@ def calculate_scores(code):
                 picks.append(tiers[player][element])
         
         # Mean and stdev calculations
-        mean = sum(picks) / len(picks)
+        mean = sum(picks) / max(len(picks), 1)
         sse = 0
         for tier in picks:
             sse += (tier - mean) ** 2
@@ -919,12 +919,12 @@ def calculate_scores(code):
         if player == settings[code]['current_master']: continue
         for element in settings[code]['active_cat']['elements']:
             # Check the player's rating
-            player_tier = 3
+            player_tier = 7
             if element in tiers[player]:
                 player_tier = tiers[player][element]
             
             # Check the master's rating
-            master_tier = 3
+            master_tier = 7
             for letter in master_picks:
                 if element in master_picks[letter]:
                     master_tier = letters[letter]
