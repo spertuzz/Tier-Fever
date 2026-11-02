@@ -450,6 +450,94 @@ def select_timer(code, wait_time):
         ping(code, None, packet)
 
 
+# Timer incase players take too long to tier
+def tier_timer(code, wait_time):
+    # Wait the given time
+    socketio.sleep(wait_time)
+    # Check if the game still has not progressed
+    if settings[code]['state'] == 'tiering':
+        # Check if game state is valid
+        if len(settings[code]['locked_players']) > 0:
+            # Set the new game state
+            settings[code]['state'] = 'scoring'
+            
+            # Resolve broken master
+            if settings[code]['configs']['masters_enabled']:
+                if rooms[code][settings[code]['current_master']]['picks'] is None:
+                    settings[code]['current_master'] = random.choice(settings[code]['locked_players'])
+            
+            # Map scores
+            starting_scores = {}
+            for player in rooms[code]:
+                starting_scores[player] = rooms[code][player]['score']
+            settings[code]['starting_scores'] = starting_scores
+            
+            # Calculate scores if no one is left
+            calculate_scores(code)
+            
+            # Get game host
+            host = None
+            breakdowns = {}
+            for player in rooms[code]:
+                if rooms[code][player]['host']:
+                    host = player
+                breakdowns[player] = rooms[code][player]['pick_breakdown']
+                
+            # Set the new game state
+            settings[code]['state'] = 'scoring'
+            settings[code]['timer_start'] = time.time()
+            
+            # Determine if the game is over
+            game_over = settings[code]['round'] >= settings[code]['configs']['rounds'] * len(rooms[code])
+            
+            # Progress the game
+            packet = {
+                'route': 'score',
+                'data': {
+                    'host': host,
+                    'starting_scores': starting_scores,
+                    'picks': breakdowns,
+                    'master': settings[code]['current_master'],
+                    'master_picks': settings[code]['master_picks'],
+                    'leaderboard': settings[code]['ending_scores'],
+                    'game_over': game_over,
+                    'timer_start': settings[code]['timer_start'],
+                    'server_time': settings[code]['timer_start']
+                }
+            }
+            ping(code, None, packet)
+            
+            # Clean up if game is over
+            if game_over:
+                clean_up(code)
+        else:
+            # Void the round and start the next one if no one did anything
+            settings[code]['round'] -= 1
+            
+            # Reset relevant player data
+            for player in rooms[code]:
+                rooms[code][player]['master'] = False
+                rooms[code][player]['picks'] = None
+                rooms[code][player]['pick_breakdown'] = None
+            
+            # Reset relevant server data
+            settings[code]['current_master'] = None
+            settings[code]['active_cat'] = None
+            settings[code]['current_cats'] = None
+            settings[code]['locked_players'] = []
+            settings[code]['master_picks'] = None
+            settings[code]['starting_scores'] = None
+            settings[code]['ending_scores'] = None
+            
+            # Change game state
+            settings[code]['state'] = 'starting'
+
+            print('sent')
+            
+            # Move on
+            emit('restart', {}, to=code)
+
+
 @socketio.on('join')
 def join_handler():
     # Get user data
@@ -859,94 +947,6 @@ def calculate_scores(code):
         for player, score in sorted(score_map.items(), key=lambda item: item[1], reverse=True)
     ]
     settings[code]['ending_scores'] = sorted_map
-
-
-# Timer incase players take too long to tier
-def tier_timer(code, wait_time):
-    # Wait the given time
-    socketio.sleep(wait_time)
-    # Check if the game still has not progressed
-    if settings[code]['state'] == 'tiering':
-        # Check if game state is valid
-        if len(settings[code]['locked_players']) > 0:
-            # Set the new game state
-            settings[code]['state'] = 'scoring'
-            
-            # Resolve broken master
-            if settings[code]['configs']['masters_enabled']:
-                if rooms[code][settings[code]['current_master']]['picks'] is None:
-                    settings[code]['current_master'] = random.choice(settings[code]['locked_players'])
-            
-            # Map scores
-            starting_scores = {}
-            for player in rooms[code]:
-                starting_scores[player] = rooms[code][player]['score']
-            settings[code]['starting_scores'] = starting_scores
-            
-            # Calculate scores if no one is left
-            calculate_scores(code)
-            
-            # Get game host
-            host = None
-            breakdowns = {}
-            for player in rooms[code]:
-                if rooms[code][player]['host']:
-                    host = player
-                breakdowns[player] = rooms[code][player]['pick_breakdown']
-                
-            # Set the new game state
-            settings[code]['state'] = 'scoring'
-            settings[code]['timer_start'] = time.time()
-            
-            # Determine if the game is over
-            game_over = settings[code]['round'] >= settings[code]['configs']['rounds'] * len(rooms[code])
-            
-            # Progress the game
-            packet = {
-                'route': 'score',
-                'data': {
-                    'host': host,
-                    'starting_scores': starting_scores,
-                    'picks': breakdowns,
-                    'master': settings[code]['current_master'],
-                    'master_picks': settings[code]['master_picks'],
-                    'leaderboard': settings[code]['ending_scores'],
-                    'game_over': game_over,
-                    'timer_start': settings[code]['timer_start'],
-                    'server_time': settings[code]['timer_start']
-                }
-            }
-            ping(code, None, packet)
-            
-            # Clean up if game is over
-            if game_over:
-                clean_up(code)
-        else:
-            # Void the round and start the next one if no one did anything
-            settings[code]['round'] -= 1
-            
-            # Reset relevant player data
-            for player in rooms[code]:
-                rooms[code][player]['master'] = False
-                rooms[code][player]['picks'] = None
-                rooms[code][player]['pick_breakdown'] = None
-            
-            # Reset relevant server data
-            settings[code]['current_master'] = None
-            settings[code]['active_cat'] = None
-            settings[code]['current_cats'] = None
-            settings[code]['locked_players'] = []
-            settings[code]['master_picks'] = None
-            settings[code]['starting_scores'] = None
-            settings[code]['ending_scores'] = None
-            
-            # Change game state
-            settings[code]['state'] = 'starting'
-
-            print('sent')
-            
-            # Move on
-            emit('restart', {}, to=code)
 
 
 @socketio.on('tier_complete')
