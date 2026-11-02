@@ -942,6 +942,8 @@ def tier_timer(code, wait_time):
             
             # Change game state
             settings[code]['state'] = 'starting'
+
+            print('sent')
             
             # Move on
             emit('restart', {}, to=code)
